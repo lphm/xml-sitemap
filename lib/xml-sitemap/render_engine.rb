@@ -13,6 +13,11 @@ module XmlSitemap
           @items.each do |item|
             s.url do |u|
               u.loc        item.target
+              unless item.alternate_urls.empty?
+                item.alternate_urls.each do |alternate_url|
+                  u[:xhtml].link(:rel => "alternate", :hreflang => alternate_url[:hreflang], :href => CGI::escapeHTML(alternate_url[:href]))
+                end
+              end
               u.lastmod    item.lastmod_value
               u.changefreq item.changefreq.to_s
               u.priority   item.priority.to_s
@@ -55,6 +60,13 @@ module XmlSitemap
       @items.each do |item|
         item_string  = "  <url>\n"
         item_string += "    <loc>#{CGI::escapeHTML(item.target)}</loc>\n"
+
+        unless item.alternate_urls.empty?
+          item.alternate_urls.each do |alternate_url|
+            item_string += "    <xhtml:link rel=\"alternate\" hreflang=\"#{alternate_url[:hreflang]}\" href=\"#{CGI::escapeHTML(alternate_url[:href])}\"/>\n"
+          end
+        end
+
         item_string += "    <lastmod>#{item.lastmod_value}</lastmod>\n"
         item_string += "    <changefreq>#{item.changefreq}</changefreq>\n"
         item_string += "    <priority>#{item.priority}</priority>\n"
