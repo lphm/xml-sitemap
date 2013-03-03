@@ -56,6 +56,12 @@ module XmlSitemap
       if url.length > 2048
         raise ArgumentError, "Target can't be longer than 2,048 characters!"
       end
+
+      if opts[:alternate_urls].present? and opts[:alternate_urls].is_a?(Array)
+        opts[:alternate_urls].each do |alternate|
+          alternate[:href] = process_target(alternate[:href]) if alternate[:href].present?
+        end
+      end
       
       opts[:updated] = @created_at unless opts.key?(:updated)
       item = XmlSitemap::Item.new(url, opts)
